@@ -22,7 +22,11 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-
+<!--        <applicationService serviceImplementation="org.hai.work.deepseekaitest.data.Main" />-->
+        <applicationConfigurable
+                instance="org.hai.work.deepseekaitest.DeepseekTestTool"
+                id="DeepSeekTestTool"
+                displayName="DeepseekTestCode设置"/>
     </extensions>
     <actions>
         <action id="CrateTestCodeMain" class="org.hai.work.deepseekaitest.CrateTestCodeMain" text="生成单元测试" description="生成单元测试">

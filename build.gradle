@@ -8,13 +8,40 @@ group = "org.hai.work"
 version = "1.0-SNAPSHOT"
 
 repositories {
-    maven { url 'https://maven.aliyun.com/repository/central/'}
+    mavenLocal()
+    maven { url 'https://maven.aliyun.com/repository/central/' }
     maven { url 'https://maven.aliyun.com/repository/public/' }
     maven { url 'https://maven.aliyun.com/repository/google/' }
-    maven { url 'https://maven.aliyun.com/repository/jcenter/'}
-    maven { url 'https://maven.aliyun.com/repository/gradle-plugin'}
+    maven { url 'https://maven.aliyun.com/repository/jcenter/' }
+    maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
 //    mavenCentral()
+    mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/snapshot' }
 }
+
+dependencies {
+//    implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
+    // Replace the following with the starter dependencies of specific modules you wish to use
+    // https://mvnrepository.com/artifact/org.springframework.ai/spring-ai-openai
+    implementation ( 'org.springframework.ai:spring-ai-openai:1.0.0-M5'){
+        exclude group: 'com.fasterxml.jackson.core'
+        exclude group: 'com.fasterxml.jackson.databind'
+        exclude group: 'com.fasterxml.jackson.annotation'
+    }
+//    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    implementation 'com.google.guava:guava:33.4.0-jre'
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation 'commons-io:commons-io:2.18.0'
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation 'org.apache.commons:commons-lang3:3.17.0'
+
+    // https://mvnrepository.com/artifact/commons-collections/commons-collections
+    implementation 'commons-collections:commons-collections:3.2.2'
+
+}
+
 
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
@@ -24,7 +51,7 @@ intellij {
 }
 
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.compilerArgs += ['-Xlint:unchecked', '-Xlint:deprecation', '-parameters']
 }
