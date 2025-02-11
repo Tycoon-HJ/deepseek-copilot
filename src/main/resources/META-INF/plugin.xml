@@ -13,7 +13,7 @@
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
-    <description>使用deepseek-ai模型，将项目中的代码生成对应的单元测试，使用方式是选中maven项目中的Java文件，点击生成单元测试，生成的代码会被覆盖，请谨慎操作</description>
+    <description>Use the deepseek - ai model to generate corresponding unit tests for the code in the project. The usage method is to select a Java file in the Maven project, click "Generate Unit Tests", and note that the generated code will overwrite the original, so operate with caution.</description>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
