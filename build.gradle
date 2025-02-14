@@ -1,62 +1,56 @@
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 plugins {
     id("java")
-//    id("org.jetbrains.kotlin.jvm") version "1.9.25"
-    id("org.jetbrains.intellij") version "1.17.4"
+    id 'org.jetbrains.intellij.platform' version '2.2.1'
 }
-
-group = "org.hai.work"
-version = "1.0-SNAPSHOT"
 
 repositories {
-    mavenLocal()
-    maven { url 'https://maven.aliyun.com/repository/central/' }
-    maven { url 'https://maven.aliyun.com/repository/public/' }
-    maven { url 'https://maven.aliyun.com/repository/google/' }
-    maven { url 'https://maven.aliyun.com/repository/jcenter/' }
-    maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
-//    mavenCentral()
     mavenCentral()
-    maven { url 'https://repo.spring.io/milestone' }
-    maven { url 'https://repo.spring.io/snapshot' }
-}
 
+    intellijPlatform {
+        defaultRepositories()
+    }
+}
+group = "org.hai.work"
+version = "1.3-SNAPSHOT"
 dependencies {
-//    implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
-    // Replace the following with the starter dependencies of specific modules you wish to use
-    // https://mvnrepository.com/artifact/org.springframework.ai/spring-ai-openai
-    implementation ( 'org.springframework.ai:spring-ai-openai:1.0.0-M5'){
+    intellijPlatform {
+        intellijIdeaCommunity '2024.3.2.1'
+    }
+    implementation('org.springframework.ai:spring-ai-openai:1.0.0-M5') {
         exclude group: 'com.fasterxml.jackson.core'
         exclude group: 'com.fasterxml.jackson.databind'
         exclude group: 'com.fasterxml.jackson.annotation'
     }
-//    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
-    // https://mvnrepository.com/artifact/com.google.guava/guava
     implementation 'com.google.guava:guava:33.4.0-jre'
-    // https://mvnrepository.com/artifact/commons-io/commons-io
     implementation 'commons-io:commons-io:2.18.0'
-    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation 'org.apache.commons:commons-lang3:3.17.0'
-
-    // https://mvnrepository.com/artifact/commons-collections/commons-collections
     implementation 'commons-collections:commons-collections:3.2.2'
-
 }
 
-
-// Configure Gradle IntelliJ Plugin
-// Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
-intellij {
-    version.set("2024.1.7")
-    type.set("IC") // Target IDE Platform
+// IntelliJ 插件配置
+intellijPlatform {
+    pluginVerification {
+        ides {
+            recommended()
+            select {
+                it.types = [IntelliJPlatformType.PhpStorm]
+                it.channels = [ProductRelease.Channel.RELEASE]
+                it.sinceBuild = '233'
+                it.untilBuild = '243.*'
+            }
+        }
+    }
+    pluginConfiguration {
+        ideaVersion {
+            sinceBuild = '233'
+            untilBuild = '243.*'
+        }
+    }
 }
-
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.compilerArgs += ['-Xlint:unchecked', '-Xlint:deprecation', '-parameters']
-}
-patchPluginXml {
-    //注意这个版本号不能高于上面intellij的version,否则runIde会报错
-    sinceBuild.set("241")
-    untilBuild.set("243.*")
 }

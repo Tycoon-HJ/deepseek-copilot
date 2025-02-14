@@ -5,7 +5,7 @@
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-    <name>Deepseek-ai-test</name>
+    <name>Deepseek-Ai-Test</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="yinhj0325@qq.com" url="https://www.haiwangrexian.com">海王娱乐有限公司</vendor>

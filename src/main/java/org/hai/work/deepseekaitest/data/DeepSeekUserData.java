@@ -5,6 +5,7 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -19,9 +20,8 @@ public final class DeepSeekUserData implements PersistentStateComponent<DeepSeek
     private String testFramework;
     private String aiModel;
 
-    @Nullable
     @Override
-    public DeepSeekUserData getState() {
+    public @NotNull DeepSeekUserData getState() {
         return this;
     }
 
