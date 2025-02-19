@@ -13,7 +13,7 @@ repositories {
     }
 }
 group = "org.hai.work"
-version = "1.3-SNAPSHOT"
+version = "1.4-SNAPSHOT"
 dependencies {
     intellijPlatform {
         intellijIdeaCommunity '2024.3.2.1'
@@ -38,14 +38,14 @@ intellijPlatform {
                 it.types = [IntelliJPlatformType.PhpStorm]
                 it.channels = [ProductRelease.Channel.RELEASE]
                 it.sinceBuild = '233'
-                it.untilBuild = '243.*'
+                it.untilBuild = '253.*'
             }
         }
     }
     pluginConfiguration {
         ideaVersion {
             sinceBuild = '233'
-            untilBuild = '243.*'
+            untilBuild = '253.*'
         }
     }
 }
