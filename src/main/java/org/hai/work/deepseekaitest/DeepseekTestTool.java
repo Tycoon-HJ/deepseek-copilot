@@ -1,7 +1,9 @@
 package org.hai.work.deepseekaitest;
 
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.*;
+import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.options.BaseConfigurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
@@ -23,6 +25,7 @@ import javax.swing.*;
 @State(name = "DeepseekTestTool", storages = @Storage("DeepseekTestTool.xml"))
 public class DeepseekTestTool extends BaseConfigurable implements SearchableConfigurable, PersistentStateComponent<DeepseekTestTool> {
 
+    DeepSeekUserData deepSeekUserData = ApplicationManager.getApplication().getService(DeepSeekUserData.class);
     private JTextField textField1;
     private JTextField textField2;
     private JComboBox<String> comboBox1;
@@ -30,12 +33,10 @@ public class DeepseekTestTool extends BaseConfigurable implements SearchableConf
     private JPanel jpanel;
     private JButton netTestPing;
     private JComboBox<String> comboBox2;
-
     private String basUrl;
     private String apiKey;
     private String testFramework;
     private String aiModel;
-    DeepSeekUserData deepSeekUserData = ApplicationManager.getApplication().getService(DeepSeekUserData.class);
 
     public DeepseekTestTool() {
 
@@ -66,13 +67,13 @@ public class DeepseekTestTool extends BaseConfigurable implements SearchableConf
                         .maxTokens(200000)
                         .build();
                 String prompt = """
-                    hello
-                    """;
+                        hello
+                        """;
                 ChatModel chatModel = new OpenAiChatModel(openAiApi, openAiChatOptions);
                 String call = chatModel.call(prompt);
-                Messages.showMessageDialog("恭喜连接成功！！！","测试AI网络",Messages.getInformationIcon());
+                Messages.showMessageDialog("恭喜连接成功！！！", "测试AI网络", Messages.getInformationIcon());
             } catch (Exception ex) {
-                Messages.showMessageDialog("错误！！！请更换AI配置参数！！！","测试AI网络",Messages.getErrorIcon());
+                Messages.showMessageDialog("错误！！！请更换AI配置参数！！！", "测试AI网络", Messages.getErrorIcon());
             }
         });
     }

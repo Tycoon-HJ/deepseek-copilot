@@ -27,6 +27,7 @@
                 instance="org.hai.work.deepseekaitest.DeepseekTestTool"
                 id="DeepSeekTestTool"
                 displayName="DeepseekTestCode设置"/>
+        <codeInsight.inlayProvider implementationClass="org.hai.work.deepseekaitest.codecompletion.CodeCompletionInlayHintsProvider" language="JAVA" />
     </extensions>
     <actions>
         <action id="CrateTestCodeMain" class="org.hai.work.deepseekaitest.CrateTestCodeMain" text="生成单元测试" description="生成单元测试">
@@ -35,4 +36,7 @@
             <!--            <keyboard-shortcut keymap="$default" first-keystroke="ctrl H"/>-->
         </action>
     </actions>
+    <applicationListeners>
+        <listener class="org.hai.work.deepseekaitest.action.MyApplicationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+    </applicationListeners>
 </idea-plugin>

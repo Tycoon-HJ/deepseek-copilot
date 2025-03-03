@@ -45,7 +45,7 @@ public class CrateTestCodeMain extends AnAction {
         OpenAiApi openAiApi = new OpenAiApi(deepSeekUserData.getBaseUrl(), deepSeekUserData.getApiKey());
         OpenAiChatOptions openAiChatOptions = OpenAiChatOptions.builder().model(deepSeekUserData.getAiModel()).temperature(0.2).maxTokens(200000).build();
         String prompt = """
-                你是一个非常优秀的Java单元测试专家，请你根据输入的Java代码，注释掉的代码不需要生成单元测试,其他的代码请覆盖所有的分支，并使用"""+deepSeekUserData.getTestFramework()+"框架进行返回对应的单元测试，只返回代码即可";
+                你是一个非常优秀的Java单元测试专家，请你根据输入的Java代码，注释掉的代码不需要生成单元测试,其他的代码请覆盖所有的分支，并使用""" + deepSeekUserData.getTestFramework() + "框架进行返回对应的单元测试，只返回代码即可";
         ChatModel chatModel = new OpenAiChatModel(openAiApi, openAiChatOptions);
         try {
             // 获取文件对应的文档

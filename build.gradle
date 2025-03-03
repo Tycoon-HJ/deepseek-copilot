@@ -23,6 +23,13 @@ dependencies {
         exclude group: 'com.fasterxml.jackson.databind'
         exclude group: 'com.fasterxml.jackson.annotation'
     }
+
+    // https://mvnrepository.com/artifact/org.springframework.ai/spring-ai-ollama
+    implementation ('org.springframework.ai:spring-ai-ollama:1.0.0-M5'){
+            exclude group: 'com.fasterxml.jackson.core'
+            exclude group: 'com.fasterxml.jackson.databind'
+            exclude group: 'com.fasterxml.jackson.annotation'
+    }
     implementation 'com.google.guava:guava:33.4.0-jre'
     implementation 'commons-io:commons-io:2.18.0'
     implementation 'org.apache.commons:commons-lang3:3.17.0'
