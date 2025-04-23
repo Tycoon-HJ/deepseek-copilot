@@ -13,7 +13,10 @@
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
-    <description>Use the deepseek - ai model to generate corresponding unit tests for the code in the project. The usage method is to select a Java file in the Maven project, click "Generate Unit Tests", and note that the generated code will overwrite the original, so operate with caution.</description>
+    <description>Use the deepseek - ai model to generate corresponding unit tests for the code in the project. The usage
+        method is to select a Java file in the Maven project, click "Generate Unit Tests", and note that the generated
+        code will overwrite the original, so operate with caution.
+    </description>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
@@ -22,21 +25,26 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-<!--        <applicationService serviceImplementation="org.hai.work.deepseekaitest.data.Main" />-->
+        <!--        <applicationService serviceImplementation="org.hai.work.deepseekaitest.data.Main" />-->
         <applicationConfigurable
                 instance="org.hai.work.deepseekaitest.DeepseekTestTool"
                 id="DeepSeekTestTool"
                 displayName="DeepseekTestCode设置"/>
-        <codeInsight.inlayProvider implementationClass="org.hai.work.deepseekaitest.codecompletion.CodeCompletionInlayHintsProvider" language="JAVA" />
+        <codeInsight.inlayProvider
+                implementationClass="org.hai.work.deepseekaitest.codecompletion.CodeCompletionInlayHintsProvider"
+                language="JAVA"/>
+
     </extensions>
     <actions>
-        <action id="CrateTestCodeMain" class="org.hai.work.deepseekaitest.CrateTestCodeMain" text="生成单元测试" description="生成单元测试">
+        <action id="CrateTestCodeMain" class="org.hai.work.deepseekaitest.CrateTestCodeMain" text="生成单元测试"
+                description="生成单元测试">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
             <!--            暂时不新增快捷键-->
             <!--            <keyboard-shortcut keymap="$default" first-keystroke="ctrl H"/>-->
         </action>
     </actions>
     <applicationListeners>
-        <listener class="org.hai.work.deepseekaitest.action.MyApplicationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+        <listener class="org.hai.work.deepseekaitest.action.MyApplicationListener"
+                  topic="com.intellij.openapi.application.ApplicationActivationListener"/>
     </applicationListeners>
 </idea-plugin>

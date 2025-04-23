@@ -9,12 +9,11 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import org.apache.commons.lang3.StringUtils;
+import org.hai.work.deepseekaitest.util.AiUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.ai.ollama.OllamaChatModel;
-import org.springframework.ai.ollama.api.OllamaApi;
-import org.springframework.ai.ollama.api.OllamaOptions;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -85,15 +84,11 @@ public class CodeCompletionInlayHintsProvider implements InlayHintsProvider {
 
     private String generateCode(String textBeforeCrate) {
         if (textBeforeCrate.endsWith("--ai")) {
-            OllamaApi ollamaApi = new OllamaApi("http://localhost:11434");
-            OllamaOptions ollamaOptions = new OllamaOptions();
-            ollamaOptions.setModel("deepseek-coder-v2:16b");
-            OllamaChatModel ollamaChatModel = OllamaChatModel.builder().ollamaApi(ollamaApi).defaultOptions(ollamaOptions).build();
+            OllamaChatModel ollamaChatModel = AiUtil.gainOllamaChatModelInstance();
             String prompt = textBeforeCrate + "，需要一个简洁、易于理解且注释详细的Java函数，只返回代码即可";
             String call = ollamaChatModel.call(prompt + textBeforeCrate);
             System.out.println(Thread.currentThread().getName() + "==========" + call);
             return call.split("```java")[1].split("```")[0];
-//            return "zheshidadsasdasdasddas asdas as das";
         }
         return "";
     }

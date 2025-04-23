@@ -1,63 +1,72 @@
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.models.ProductRelease
+
 plugins {
     id("java")
-    id 'org.jetbrains.intellij.platform' version '2.2.1'
+    id("org.jetbrains.intellij.platform") version "2.5.0"
 }
+
+group = "org.hai.work"
+version = "1.4-SNAPSHOT"
 
 repositories {
     mavenCentral()
-
     intellijPlatform {
         defaultRepositories()
     }
 }
-group = "org.hai.work"
-version = "1.4-SNAPSHOT"
+
 dependencies {
+    // 指定 IntelliJ IDEA 版本
     intellijPlatform {
-        intellijIdeaCommunity '2024.3.2.1'
-    }
-    implementation('org.springframework.ai:spring-ai-openai:1.0.0-M5') {
-        exclude group: 'com.fasterxml.jackson.core'
-        exclude group: 'com.fasterxml.jackson.databind'
-        exclude group: 'com.fasterxml.jackson.annotation'
+        intellijIdeaCommunity("2024.3.2.1")
     }
 
-    // https://mvnrepository.com/artifact/org.springframework.ai/spring-ai-ollama
-    implementation ('org.springframework.ai:spring-ai-ollama:1.0.0-M5'){
-            exclude group: 'com.fasterxml.jackson.core'
-            exclude group: 'com.fasterxml.jackson.databind'
-            exclude group: 'com.fasterxml.jackson.annotation'
+    // Spring AI for OpenAI（排除 Jackson & reactor-core，避免与 IntelliJ 冲突）
+    implementation("org.springframework.ai:spring-ai-openai:1.0.0-M5") {
+        exclude group: "com.fasterxml.jackson.core"
+        exclude group: "com.fasterxml.jackson.databind"
+        exclude group: "com.fasterxml.jackson.annotation"
+//        exclude group: "io.projectreactor", module: "reactor-core"
     }
-    implementation 'com.google.guava:guava:33.4.0-jre'
-    implementation 'commons-io:commons-io:2.18.0'
-    implementation 'org.apache.commons:commons-lang3:3.17.0'
-    implementation 'commons-collections:commons-collections:3.2.2'
+
+    // Spring AI for Ollama（同样排除相关依赖）
+    implementation("org.springframework.ai:spring-ai-ollama:1.0.0-M5") {
+        exclude group: "com.fasterxml.jackson.core"
+        exclude group: "com.fasterxml.jackson.databind"
+        exclude group: "com.fasterxml.jackson.annotation"
+//        exclude group: "io.projectreactor", module: "reactor-core"
+    }
+
+    // 常用工具库
+    implementation("com.google.guava:guava:33.4.0-jre")
+    implementation("commons-io:commons-io:2.18.0")
+    implementation("org.apache.commons:commons-lang3:3.17.0")
+    implementation("commons-collections:commons-collections:3.2.2")
 }
 
-// IntelliJ 插件配置
 intellijPlatform {
     pluginVerification {
         ides {
             recommended()
             select {
-                it.types = [IntelliJPlatformType.PhpStorm]
+                it.types = [IntelliJPlatformType.IntellijIdeaCommunity]  // 可改为 IntelliJPlatformType.IdeaCommunity 等
                 it.channels = [ProductRelease.Channel.RELEASE]
-                it.sinceBuild = '233'
-                it.untilBuild = '253.*'
+                it.sinceBuild = "233"
+                it.untilBuild = "253.*"
             }
         }
     }
     pluginConfiguration {
         ideaVersion {
-            sinceBuild = '233'
-            untilBuild = '253.*'
+            sinceBuild = "233"
+            untilBuild = "253.*"
         }
     }
 }
 
+// 编译参数配置
 tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-    options.compilerArgs += ['-Xlint:unchecked', '-Xlint:deprecation', '-parameters']
+    options.encoding = "UTF-8"
+    options.compilerArgs += ["-Xlint:unchecked", "-Xlint:deprecation", "-parameters"]
 }
