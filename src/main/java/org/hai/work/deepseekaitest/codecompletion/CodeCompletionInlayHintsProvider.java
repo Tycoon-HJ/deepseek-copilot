@@ -2,6 +2,7 @@ package org.hai.work.deepseekaitest.codecompletion;
 
 import com.intellij.codeInsight.hints.*;
 import com.intellij.lang.Language;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.Inlay;
@@ -13,7 +14,6 @@ import org.hai.work.deepseekaitest.util.AiUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.ai.ollama.OllamaChatModel;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -27,7 +27,6 @@ public class CodeCompletionInlayHintsProvider implements InlayHintsProvider {
     public static Editor currenteditor;
     // 创建一个单线程的执行器,否则会开启10个线程进程调AI模型，造成性能浪费
     private final ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
-    private String lastGenerationCode = "";
 
     @Override
     public @Nls(capitalization = Nls.Capitalization.Sentence) @NotNull String getName() {
@@ -47,30 +46,39 @@ public class CodeCompletionInlayHintsProvider implements InlayHintsProvider {
                     if (StringUtils.isNotBlank(lastGenerationCode)) {
                         return false;
                     }
+                    ReadAction.run(() -> {
+                        Document document;
+                        int offset;
+                        String srcText;
+                        try {
+                            document = editor.getDocument();
+                            offset = editor.getCaretModel().getOffset();
+                            srcText = document.getText(new TextRange(0, offset));
+                        } catch (Exception e) {
+                            // do nothing
+                            return;
+                        }
 
-                    Document document = editor.getDocument();
-                    int offset = editor.getCaretModel().getOffset();
-                    String srcText = document.getText(new TextRange(0, offset));
+                        if (!srcText.endsWith("--ai")) {
+                            lastGenerationCode = "";
+                            lastGenerationOffset = -1;
+                            return;
+                        }
 
-                    if (!srcText.endsWith("--ai")) {
-                        lastGenerationCode = "";
-                        lastGenerationOffset = -1;
-                        return false;
-                    }
+                        String generateCode = AiUtil.generateCodeStr(srcText);
+                        if (generateCode.equals(lastGenerationCode) && offset == lastGenerationOffset) {
+                            return;
+                        }
+                        code = generateCode;
+                        currenteditor = editor;
+                        lastGenerationCode = generateCode;
+                        lastGenerationOffset = offset;
+                        editor.getInlayModel().getInlineElementsInRange(0, document.getTextLength()).forEach(Inlay::dispose);
 
-                    String generateCode = generateCode(srcText);
-                    if (generateCode.equals(lastGenerationCode) && offset == lastGenerationOffset) {
-                        return false;
-                    }
-                    code = generateCode;
-                    currenteditor = editor;
-                    lastGenerationCode = generateCode;
-                    lastGenerationOffset = offset;
-                    editor.getInlayModel().getInlineElementsInRange(0, document.getTextLength()).forEach(Inlay::dispose);
-
-                    if (!generateCode.isEmpty()) {
-                        inlayHintsSink.addInlineElement(offset, false, new CodeCompletionInlayRenderer(generateCode, editor), false);
-                    }
+                        if (!generateCode.isEmpty()) {
+                            inlayHintsSink.addInlineElement(offset, false, new CodeCompletionInlayRenderer(generateCode, editor), false);
+                        }
+                    });
                     return false;
                 });
                 try {
@@ -80,17 +88,6 @@ public class CodeCompletionInlayHintsProvider implements InlayHintsProvider {
                 }
             }
         };
-    }
-
-    private String generateCode(String textBeforeCrate) {
-        if (textBeforeCrate.endsWith("--ai")) {
-            OllamaChatModel ollamaChatModel = AiUtil.gainOllamaChatModelInstance();
-            String prompt = textBeforeCrate + "，需要一个简洁、易于理解且注释详细的Java函数，只返回代码即可";
-            String call = ollamaChatModel.call(prompt + textBeforeCrate);
-            System.out.println(Thread.currentThread().getName() + "==========" + call);
-            return call.split("```java")[1].split("```")[0];
-        }
-        return "";
     }
 
     @Override
@@ -110,7 +107,7 @@ public class CodeCompletionInlayHintsProvider implements InlayHintsProvider {
 
     @Override
     public @NotNull ImmediateConfigurable createConfigurable(@NotNull Object o) {
-        return null;
+        return new CodeCompletionImmediateConfigurable();
     }
 
     @Override

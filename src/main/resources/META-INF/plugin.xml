@@ -36,6 +36,15 @@
 
     </extensions>
     <actions>
+        <action id="org.hai.work.deepseekaitest.stream.TriggerAiStreamingAction"
+                class="org.hai.work.deepseekaitest.stream.TriggerAiStreamingAction"
+                text="生成AI答案" description="生成AI答案">
+            <add-to-group group-id="ShowIntentionsGroup" anchor="first"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl meta SLASH"/>
+
+        </action>
+    </actions>
+    <actions>
         <action id="CrateTestCodeMain" class="org.hai.work.deepseekaitest.CrateTestCodeMain" text="生成单元测试"
                 description="生成单元测试">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
