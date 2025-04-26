@@ -35,7 +35,9 @@ public class CodeCompletionInlayHintsProvider implements InlayHintsProvider {
 
     @Override
     public @Nullable InlayHintsCollector getCollectorFor(@NotNull PsiFile psiFile, @NotNull Editor editor, @NotNull Object o, @NotNull InlayHintsSink inlayHintsSink) {
-
+        if (!AiUtil.checkAiIsAlready()) {
+            return null;
+        }
         return new InlayHintsCollector() {
             private String lastGenerationCode = "";
             private int lastGenerationOffset = -1;

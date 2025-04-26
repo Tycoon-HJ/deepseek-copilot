@@ -5,7 +5,7 @@
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-    <name>DeepSeek Ai Test</name>
+    <name>DeepSeek Copilot</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="yinhj0325@qq.com" url="https://www.haiwangrexian.com">海王娱乐有限公司</vendor>
@@ -13,9 +13,9 @@
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
-    <description>Use the deepseek - ai model to generate corresponding unit tests for the code in the project. The usage
-        method is to select a Java file in the Maven project, click "Generate Unit Tests", and note that the generated
-        code will overwrite the original, so operate with caution.
+    <description>DeepSeek Copilot is an AI-powered assistant plugin for IntelliJ IDEA that intelligently analyzes your code and automatically generates high-quality unit tests. It also supports comment-driven code generation, greatly boosting your development efficiency and code quality.
+        Whether you're struggling with low test coverage or getting stuck on complex logic, DeepSeek Copilot has you covered — so you can focus on what truly matters: creative development.
+        Guidelines: https://github.com/Tycoon-HJ/deepseek-copilot
     </description>
 
     <!-- Product and plugin compatibility requirements.
@@ -29,7 +29,7 @@
         <applicationConfigurable
                 instance="org.hai.work.deepseekaitest.DeepseekTestTool"
                 id="DeepSeekTestTool"
-                displayName="DeepseekTestCode设置"/>
+                displayName="Deepseek Copilot Setting"/>
         <codeInsight.inlayProvider
                 implementationClass="org.hai.work.deepseekaitest.codecompletion.CodeCompletionInlayHintsProvider"
                 language="JAVA"/>

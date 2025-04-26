@@ -11,13 +11,11 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.NlsContexts;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.hai.work.deepseekaitest.data.DeepSeekUserData;
+import org.hai.work.deepseekaitest.util.AiUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.openai.OpenAiChatModel;
-import org.springframework.ai.openai.OpenAiChatOptions;
-import org.springframework.ai.openai.api.OpenAiApi;
 
 import javax.swing.*;
 
@@ -26,13 +24,13 @@ import javax.swing.*;
 public class DeepseekTestTool extends BaseConfigurable implements SearchableConfigurable, PersistentStateComponent<DeepseekTestTool> {
 
     DeepSeekUserData deepSeekUserData = ApplicationManager.getApplication().getService(DeepSeekUserData.class);
-    private JTextField textField1;
-    private JTextField textField2;
+    private JTextField jTextFieldBaseUrl;
+    private JPasswordField jTextFieldApiKey;
     private JComboBox<String> comboBox1;
     private JButton jButton;
     private JPanel jpanel;
     private JButton netTestPing;
-    private JComboBox<String> comboBox2;
+    private JTextField jTextFieldModel;
     private String basUrl;
     private String apiKey;
     private String testFramework;
@@ -45,34 +43,22 @@ public class DeepseekTestTool extends BaseConfigurable implements SearchableConf
         comboBox1.addItem("Junit5");
         comboBox1.addItem("SpringBootTest");
 
-        comboBox2.addItem("gpt-4o-mini");
-        comboBox2.addItem("deepseek-r1");
-
-
         // 添加监听事件
         jButton.addActionListener(e -> {
-            deepSeekUserData.setBaseUrl(textField1.getText());
-            deepSeekUserData.setApiKey(textField2.getText());
+            deepSeekUserData.setBaseUrl(jTextFieldBaseUrl.getText());
+            deepSeekUserData.setApiKey(new String(jTextFieldApiKey.getPassword()));
             deepSeekUserData.setTestFramework((String) comboBox1.getSelectedItem());
-            deepSeekUserData.setAiModel((String) comboBox2.getSelectedItem());
+            deepSeekUserData.setAiModel(jTextFieldModel.getText());
+            Messages.showMessageDialog("保存成功！！！", "保存连接信息", Messages.getInformationIcon());
         });
 
         netTestPing.addActionListener(e -> {
-
             try {
-                OpenAiApi openAiApi = new OpenAiApi(textField1.getText(), textField2.getText());
-                OpenAiChatOptions openAiChatOptions = OpenAiChatOptions.builder()
-                        .model("gpt-4o-mini")
-                        .temperature(0.2)
-                        .maxTokens(200000)
-                        .build();
-                String prompt = """
-                        hello
-                        """;
-                ChatModel chatModel = new OpenAiChatModel(openAiApi, openAiChatOptions);
-                String call = chatModel.call(prompt);
+                ChatModel chatModel = AiUtil.initOpenAiChatModel(jTextFieldBaseUrl.getText(), new String(jTextFieldApiKey.getPassword()), jTextFieldModel.getText());
+                chatModel.call("hello");
                 Messages.showMessageDialog("恭喜连接成功！！！", "测试AI网络", Messages.getInformationIcon());
             } catch (Exception ex) {
+                AiUtil.destroyOpenAi();
                 Messages.showMessageDialog("错误！！！请更换AI配置参数！！！", "测试AI网络", Messages.getErrorIcon());
             }
         });
@@ -114,9 +100,9 @@ public class DeepseekTestTool extends BaseConfigurable implements SearchableConf
 
     @Override
     public void reset() {
-        textField1.setText(deepSeekUserData.getBaseUrl());
-        textField2.setText(deepSeekUserData.getApiKey());
+        jTextFieldBaseUrl.setText(deepSeekUserData.getBaseUrl());
+        jTextFieldApiKey.setText(deepSeekUserData.getApiKey());
         comboBox1.setSelectedItem(deepSeekUserData.getTestFramework());
-        comboBox2.setSelectedItem(deepSeekUserData.getAiModel());
+        jTextFieldModel.setText(deepSeekUserData.getAiModel());
     }
 }

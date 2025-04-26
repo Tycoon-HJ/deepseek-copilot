@@ -27,7 +27,9 @@ public class TriggerAiStreamingAction extends AnAction {
         if (project == null || editor == null) {
             return; // 没有项目或编辑器，无法执行
         }
-
+        if (!AiUtil.checkAiIsAlready()) {
+            return;
+        }
         SelectionModel selectionModel = editor.getSelectionModel();
         // 检查是否有选中的文本
         if (selectionModel.hasSelection()) {

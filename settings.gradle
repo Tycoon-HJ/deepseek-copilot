@@ -5,4 +5,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "deepseek-ai-test"
+rootProject.name = "deepseek-copilot"

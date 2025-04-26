@@ -8,7 +8,7 @@
     <properties/>
     <border type="none"/>
     <children>
-      <component id="da3aa" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+      <component id="da3aa" class="javax.swing.JTextField" binding="jTextFieldBaseUrl" default-binding="true">
         <constraints>
           <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -16,7 +16,7 @@
         </constraints>
         <properties/>
       </component>
-      <component id="82956" class="javax.swing.JTextField" binding="textField2" default-binding="true">
+      <component id="6769b" class="javax.swing.JPasswordField" binding="jTextFieldApiKey" default-binding="true">
         <constraints>
           <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -44,7 +44,9 @@
         <constraints>
           <grid row="3" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties/>
+        <properties>
+          <model/>
+        </properties>
       </component>
       <vspacer id="3a76">
         <constraints>
@@ -80,7 +82,7 @@
           <text value="测试网络"/>
         </properties>
       </component>
-      <component id="c188f" class="javax.swing.JComboBox" binding="comboBox2" default-binding="true">
+      <component id="d392e" class="javax.swing.JTextField" binding="jTextFieldModel">
         <constraints>
           <grid row="2" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
