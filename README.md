@@ -1,4 +1,4 @@
-# 🌌 DeepSeek Copilot for IntelliJ IDEA
+# 🌌 DeepSeek Copilot for IntelliJ IDEA [中文](https://github.com/Tycoon-HJ/deepseek-copilot/blob/master/README-CN.md)/ [English](https://github.com/Tycoon-HJ/deepseek-copilot/blob/master/README.md)
 
 > Let AI be your programming copilot – instantly generate unit tests & implement functions from comments!
 
