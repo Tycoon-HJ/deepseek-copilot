@@ -59,11 +59,9 @@ public class AiEditorStreamWriter {
      */
     public void startStreaming(@NotNull Flux<String> aiOutputFlux) {
         stopStreaming(); // 停止任何正在进行的流
-
         // 记录开始插入时的Document offset，这是AI输出的起始位置
         this.startOffset = caretModel.getOffset();
         this.currentTotalLength.set(0); // 重置总长度计数器
-
         // 订阅Flux流，并在EDT上处理每个文本块
         currentSubscription = aiOutputFlux
                 // 确保后续的操作 (onNext, onError, onComplete) 在IntelliJ的EDT上执行
@@ -79,31 +77,24 @@ public class AiEditorStreamWriter {
                                     stopStreaming(); // 停止流，因为环境不再有效
                                     return;
                                 }
-
                                 try {
                                     // 计算当前插入位置：AI输出的起始位置 + 已经插入的总长度
                                     int currentOffset = startOffset + currentTotalLength.get();
-
                                     // 安全检查：确保插入位置在Document的有效范围内
                                     if (currentOffset < 0 || currentOffset > document.getTextLength()) {
                                         System.err.println("Attempted to insert at invalid offset: " + currentOffset + ". Document length: " + document.getTextLength());
                                         stopStreaming(); // 停止流以防意外
                                         return;
                                     }
-
-
                                     // 将文本块插入到Document
                                     document.insertString(currentOffset, chunk);
-
                                     // 更新已插入的总长度
                                     currentTotalLength.addAndGet(chunk.length());
-
                                     // 将光标移动到新插入文本的末尾，并滚动到可见区域
                                     // 这样做能让用户实时看到AI正在写入的内容
                                     int newCaretOffset = startOffset + currentTotalLength.get();
                                     caretModel.moveToOffset(newCaretOffset);
                                     editor.getScrollingModel().scrollToCaret(ScrollType.CENTER_DOWN);
-
                                 } catch (Exception e) {
                                     // 插入过程中发生的异常处理 (例如，Document被外部修改导致offset无效等)
                                     System.err.println("Error inserting text chunk: " + e.getMessage());
@@ -151,9 +142,4 @@ public class AiEditorStreamWriter {
     public boolean isStreaming() {
         return currentSubscription != null && !currentSubscription.isDisposed();
     }
-
-    // 注意：这个类的实例需要在你的插件中进行管理。
-    // 例如，你可以在一个 Project Service 中持有这个实例，
-    // 并在Project Service的 dispose 方法中调用 stopStreaming()。
-    // 或者根据你的UI元素生命周期来管理。
 }

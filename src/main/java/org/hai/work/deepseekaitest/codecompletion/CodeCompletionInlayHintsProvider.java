@@ -2,6 +2,7 @@ package org.hai.work.deepseekaitest.codecompletion;
 
 import com.intellij.codeInsight.hints.*;
 import com.intellij.lang.Language;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -35,7 +36,7 @@ public class CodeCompletionInlayHintsProvider implements InlayHintsProvider {
 
     @Override
     public @Nullable InlayHintsCollector getCollectorFor(@NotNull PsiFile psiFile, @NotNull Editor editor, @NotNull Object o, @NotNull InlayHintsSink inlayHintsSink) {
-        if (!AiUtil.checkAiIsAlready()) {
+        if (AiUtil.checkAiIsAlready()) {
             return null;
         }
         return new InlayHintsCollector() {
@@ -55,7 +56,10 @@ public class CodeCompletionInlayHintsProvider implements InlayHintsProvider {
                         try {
                             document = editor.getDocument();
                             offset = editor.getCaretModel().getOffset();
-                            srcText = document.getText(new TextRange(0, offset));
+                            int lineNumber = document.getLineNumber(offset);
+                            int lineStartOffset = document.getLineStartOffset(lineNumber);
+                            int lineEndOffset = document.getLineEndOffset(lineNumber);
+                            srcText = document.getText(new TextRange(lineStartOffset, lineEndOffset));
                         } catch (Exception e) {
                             // do nothing
                             return;
@@ -67,19 +71,21 @@ public class CodeCompletionInlayHintsProvider implements InlayHintsProvider {
                             return;
                         }
 
-                        String generateCode = AiUtil.generateCodeStr(srcText);
-                        if (generateCode.equals(lastGenerationCode) && offset == lastGenerationOffset) {
-                            return;
-                        }
-                        code = generateCode;
-                        currenteditor = editor;
-                        lastGenerationCode = generateCode;
-                        lastGenerationOffset = offset;
-                        editor.getInlayModel().getInlineElementsInRange(0, document.getTextLength()).forEach(Inlay::dispose);
+                        ApplicationManager.getApplication().invokeLater(() -> {
+                            String generateCode = AiUtil.generateCodeStr(srcText);
+                            if (generateCode.equals(lastGenerationCode) && offset == lastGenerationOffset) {
+                                return;
+                            }
+                            code = generateCode;
+                            currenteditor = editor;
+                            lastGenerationCode = generateCode;
+                            lastGenerationOffset = offset;
+                            editor.getInlayModel().getInlineElementsInRange(0, document.getTextLength()).forEach(Inlay::dispose);
 
-                        if (!generateCode.isEmpty()) {
-                            inlayHintsSink.addInlineElement(offset, false, new CodeCompletionInlayRenderer(generateCode, editor), false);
-                        }
+                            if (!generateCode.isEmpty()) {
+                                inlayHintsSink.addInlineElement(offset, false, new CodeCompletionInlayRenderer(generateCode, editor), false);
+                            }
+                        });
                     });
                     return false;
                 });

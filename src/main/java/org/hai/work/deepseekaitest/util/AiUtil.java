@@ -56,10 +56,11 @@ public class AiUtil {
         DeepSeekUserData deepSeekUserData = ApplicationManager.getApplication().getService(DeepSeekUserData.class);
         if (deepSeekUserData == null || Objects.isNull(deepSeekUserData.getBaseUrl()) || Objects.isNull(deepSeekUserData.getApiKey())
                 || Objects.isNull(deepSeekUserData.getAiModel()) || Objects.isNull(deepSeekUserData.getTestFramework())) {
-            Messages.showMessageDialog("未加载到AI相关配置，请先在设置中进行AI参数配置！", "DeepSeek Copilot", Messages.getWarningIcon());
-            return false;
+            ApplicationManager.getApplication().invokeLater(() ->
+                    Messages.showMessageDialog("未加载到AI相关配置，请先在设置中进行AI参数配置！", "DeepSeek Copilot", Messages.getWarningIcon()));
+            return true;
         }
-        return true;
+        return false;
     }
 
 

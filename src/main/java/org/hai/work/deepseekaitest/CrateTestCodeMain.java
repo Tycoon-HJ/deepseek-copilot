@@ -28,12 +28,12 @@ public class CrateTestCodeMain extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent e) {
         // 获取当前选中的虚拟文件
         VirtualFile selectedFile = e.getData(PlatformDataKeys.VIRTUAL_FILE);
-        if (!selectedFile.getCanonicalFile().getName().endsWith(".java")) {
+        if (selectedFile != null && !Objects.requireNonNull(selectedFile.getCanonicalFile()).getName().endsWith(".java")) {
             Messages.showMessageDialog("仅支持生成Java文件的单元测试", "DeepSeek Copilot", Messages.getWarningIcon());
             return;
         }
         DeepSeekUserData deepSeekUserData = ApplicationManager.getApplication().getService(DeepSeekUserData.class);
-        if (!AiUtil.checkAiIsAlready()) {
+        if (AiUtil.checkAiIsAlready()) {
             return;
         }
         try {

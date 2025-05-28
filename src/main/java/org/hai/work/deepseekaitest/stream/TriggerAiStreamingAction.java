@@ -3,14 +3,15 @@ package org.hai.work.deepseekaitest.stream;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import org.hai.work.deepseekaitest.util.AiUtil;
-import reactor.core.publisher.Flux;
 
 import javax.validation.constraints.NotNull;
+import java.util.concurrent.CompletableFuture;
 
 public class TriggerAiStreamingAction extends AnAction {
 
@@ -27,7 +28,7 @@ public class TriggerAiStreamingAction extends AnAction {
         if (project == null || editor == null) {
             return; // 没有项目或编辑器，无法执行
         }
-        if (!AiUtil.checkAiIsAlready()) {
+        if (AiUtil.checkAiIsAlready()) {
             return;
         }
         SelectionModel selectionModel = editor.getSelectionModel();
@@ -42,10 +43,13 @@ public class TriggerAiStreamingAction extends AnAction {
                 }
                 // 创建并初始化写入器
                 currentStreamWriter = new AiEditorStreamWriter(project, editor);
-                // 获取AI输出的Flux流
-                Flux<String> aiOutputFlux = AiUtil.generateCodeStream(selectedText);
-                // 启动流式写入
-                currentStreamWriter.startStreaming(aiOutputFlux);
+                CompletableFuture.supplyAsync(() -> AiUtil.generateCodeStream(selectedText))
+                        .thenAccept(result -> {
+                            ApplicationManager.getApplication().invokeLater(() -> {
+                                // 在 EDT 中安全启动流式写入
+                                currentStreamWriter.startStreaming(result);
+                            });
+                        });
             }
         } else {
             Messages.showInfoMessage("请选中要询问的问题🙏", "暂无找到问题");
