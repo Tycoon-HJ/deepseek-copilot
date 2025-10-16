@@ -66,13 +66,16 @@ public class AiUtil {
 
     public static OpenAiChatModel initOpenAiChatModel(String baseUrl, String apiKey, String model) {
         if (openAiChatModel == null) {
-            OpenAiApi openAiApi = new OpenAiApi(baseUrl, apiKey);
+            OpenAiApi openAiApi = OpenAiApi.builder()
+                    .apiKey(apiKey)
+                    .baseUrl(baseUrl)
+                    .build();
             OpenAiChatOptions openAiChatOptions = OpenAiChatOptions.builder()
                     .model(model)
                     .temperature(0.2)
                     .maxTokens(2000000)
                     .build();
-            openAiChatModel = new OpenAiChatModel(openAiApi, openAiChatOptions);
+            openAiChatModel = OpenAiChatModel.builder().openAiApi(openAiApi).defaultOptions(openAiChatOptions).build();
         }
         return openAiChatModel;
     }
@@ -109,7 +112,7 @@ public class AiUtil {
      */
     public static OllamaChatModel gainOllamaChatModelInstance() {
         if (Objects.isNull(ollamaChatModel)) {
-            OllamaApi ollamaApi = new OllamaApi("http://localhost:11434");
+            OllamaApi ollamaApi = OllamaApi.builder().baseUrl("http://localhost:11434").build();
             OllamaOptions ollamaOptions = new OllamaOptions();
             ollamaOptions.setModel("deepseek-coder-v2:16b");
             ollamaChatModel = OllamaChatModel.builder().ollamaApi(ollamaApi).defaultOptions(ollamaOptions).build();

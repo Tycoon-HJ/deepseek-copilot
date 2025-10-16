@@ -3,7 +3,7 @@ import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 
 plugins {
     id("java")
-    id("org.jetbrains.intellij.platform") version "2.5.0"
+    id("org.jetbrains.intellij.platform") version "2.10.0"
 }
 
 group = "org.hai.work"
@@ -23,7 +23,7 @@ dependencies {
     }
 
     // Spring AI for OpenAI（排除 Jackson & reactor-core，避免与 IntelliJ 冲突）
-    implementation("org.springframework.ai:spring-ai-openai:1.0.0-M5") {
+    implementation("org.springframework.ai:spring-ai-openai:1.0.3"){
         exclude group: "com.fasterxml.jackson.core"
         exclude group: "com.fasterxml.jackson.databind"
         exclude group: "com.fasterxml.jackson.annotation"
@@ -31,7 +31,7 @@ dependencies {
     }
 
     // Spring AI for Ollama（同样排除相关依赖）
-    implementation("org.springframework.ai:spring-ai-ollama:1.0.0-M5") {
+    implementation("org.springframework.ai:spring-ai-ollama:1.0.3") {
         exclude group: "com.fasterxml.jackson.core"
         exclude group: "com.fasterxml.jackson.databind"
         exclude group: "com.fasterxml.jackson.annotation"

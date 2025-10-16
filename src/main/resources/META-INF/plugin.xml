@@ -30,9 +30,6 @@
                 instance="org.hai.work.deepseekaitest.DeepseekTestTool"
                 id="DeepSeekTestTool"
                 displayName="Deepseek Copilot Setting"/>
-        <codeInsight.inlayProvider
-                implementationClass="org.hai.work.deepseekaitest.codecompletion.CodeCompletionInlayHintsProvider"
-                language="JAVA"/>
 
     </extensions>
     <actions>
@@ -52,8 +49,4 @@
             <!--            <keyboard-shortcut keymap="$default" first-keystroke="ctrl H"/>-->
         </action>
     </actions>
-    <applicationListeners>
-        <listener class="org.hai.work.deepseekaitest.action.MyApplicationListener"
-                  topic="com.intellij.openapi.application.ApplicationActivationListener"/>
-    </applicationListeners>
 </idea-plugin>
