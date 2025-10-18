@@ -7,6 +7,8 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.concurrency.AppExecutorUtil;
+import org.hai.work.deepseekaitest.util.EditorWriteExample;
+import org.hai.work.deepseekaitest.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import reactor.core.Disposable;
@@ -22,21 +24,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class AiEditorStreamWriter {
 
-    @Nullable
-    private Disposable currentSubscription; // 使用 @Nullable 注解，表示可能为 null
-
-    private Project project;
-    private Editor editor;
-    private Document document;
-    private CaretModel caretModel;
-
-    // 记录AI输出开始插入时的Document offset
-    private int startOffset;
-
     // 使用AtomicInteger来跟踪AI已插入的总文本长度
     // 它是线程安全的，因为Flux的回调可能来自不同的线程（虽然我们会切到EDT）
     // 但AtomicInteger确保了更新总长度时的原子性
     private final AtomicInteger currentTotalLength = new AtomicInteger(0);
+    @Nullable
+    private Disposable currentSubscription; // 使用 @Nullable 注解，表示可能为 null
+    private Project project;
+    private Editor editor;
+    private Document document;
+    private CaretModel caretModel;
+    // 记录AI输出开始插入时的Document offset
+    private int startOffset;
 
     /**
      * 初始化写入器。
@@ -57,7 +56,7 @@ public class AiEditorStreamWriter {
      *
      * @param aiOutputFlux AI输出的文本块流
      */
-    public void startStreaming(@NotNull Flux<String> aiOutputFlux) {
+    public void startStreaming(@NotNull Flux<String> aiOutputFlux, int lineNumber) {
         stopStreaming(); // 停止任何正在进行的流
         // 记录开始插入时的Document offset，这是AI输出的起始位置
         this.startOffset = caretModel.getOffset();
@@ -86,8 +85,7 @@ public class AiEditorStreamWriter {
                                         stopStreaming(); // 停止流以防意外
                                         return;
                                     }
-                                    // 将文本块插入到Document
-                                    document.insertString(currentOffset, chunk);
+                                    EditorWriteExample.insertTextBetweenLines(project, editor, lineNumber, StringUtils.addIndentation(chunk));
                                     // 更新已插入的总长度
                                     currentTotalLength.addAndGet(chunk.length());
                                     // 将光标移动到新插入文本的末尾，并滚动到可见区域

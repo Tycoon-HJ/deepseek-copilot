@@ -1,4 +1,4 @@
-package org.hai.work.deepseekaitest;
+package org.hai.work.deepseekaitest.action;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
@@ -23,7 +23,7 @@ import java.util.Objects;
 /**
  * @author yinha
  */
-public class CrateTestCodeMain extends AnAction {
+public class CrateTestCodeAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         // 获取当前选中的虚拟文件
@@ -36,6 +36,7 @@ public class CrateTestCodeMain extends AnAction {
         if (AiUtil.checkAiIsAlready()) {
             return;
         }
+        AiUtil.initOpenAiChatModel();
         try {
             // 获取文件对应的文档
             Document document = FileDocumentManager.getInstance().getDocument(selectedFile);

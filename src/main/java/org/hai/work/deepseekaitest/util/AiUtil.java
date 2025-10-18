@@ -5,6 +5,7 @@ import com.intellij.openapi.ui.Messages;
 import org.hai.work.deepseekaitest.data.DeepSeekUserData;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaApi;
@@ -49,6 +50,17 @@ public class AiUtil {
             
             待测试的 Java 代码：
             """;
+
+    public final static String COMMON = """
+            只输出注释部分，不要返回原代码
+            使用多行注释格式 /** ... */
+            自动根据代码的缩进生成相同缩进的注释
+            第一行简要说明代码整体功能（不超过两句）
+            函数若有入参，使用 @param 描述每个参数的含义
+            函数若有返回值，使用 @return 说明返回值
+            若函数可能抛出异常，请使用 @throws 说明原因
+            语言简洁、专业，保持 JavaDoc 风格
+            """;
     private static OllamaChatModel ollamaChatModel;
     private static OpenAiChatModel openAiChatModel;
 
@@ -63,6 +75,19 @@ public class AiUtil {
         return false;
     }
 
+
+    public static void initOpenAiChatModel() {
+        if (openAiChatModel == null) {
+            try {
+                DeepSeekUserData deepSeekUserData = ApplicationManager.getApplication().getService(DeepSeekUserData.class);
+                ChatModel chatModel = AiUtil.initOpenAiChatModel(deepSeekUserData.getBaseUrl(), deepSeekUserData.getApiKey(), deepSeekUserData.getAiModel());
+                chatModel.call("hello");
+            } catch (Exception ex) {
+                AiUtil.destroyOpenAi();
+                Messages.showMessageDialog("错误！！！请更换AI配置参数！！！", "测试AI网络", Messages.getErrorIcon());
+            }
+        }
+    }
 
     public static OpenAiChatModel initOpenAiChatModel(String baseUrl, String apiKey, String model) {
         if (openAiChatModel == null) {
@@ -97,6 +122,19 @@ public class AiUtil {
         SystemMessage systemMessage = new SystemMessage(AiUtil.SYSTEM_MESSAGE);
         Prompt prompt = new Prompt(systemMessage, new UserMessage(code));
         return openAiChatModel.call(prompt).getResult().toString().split("```java")[1].split("```")[0];
+    }
+
+    /**
+     * 生产代码注释
+     *
+     * @param code
+     * @return
+     */
+    public static String getCodeComment(String code) {
+        SystemMessage systemMessage = new SystemMessage(AiUtil.COMMON);
+        Prompt prompt = new Prompt(systemMessage, new UserMessage(code));
+        System.out.println(openAiChatModel.call(prompt).getResult());
+        return openAiChatModel.call(prompt).getResult().getOutput().getText();
     }
 
     public static String getAiTestResult(String code, String testFramework) {

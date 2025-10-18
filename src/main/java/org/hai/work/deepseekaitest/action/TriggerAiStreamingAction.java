@@ -1,13 +1,15 @@
-package org.hai.work.deepseekaitest.stream;
+package org.hai.work.deepseekaitest.action;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import org.hai.work.deepseekaitest.stream.AiEditorStreamWriter;
 import org.hai.work.deepseekaitest.util.AiUtil;
 
 import javax.validation.constraints.NotNull;
@@ -31,6 +33,7 @@ public class TriggerAiStreamingAction extends AnAction {
         if (AiUtil.checkAiIsAlready()) {
             return;
         }
+        AiUtil.initOpenAiChatModel();
         SelectionModel selectionModel = editor.getSelectionModel();
         // 检查是否有选中的文本
         if (selectionModel.hasSelection()) {
@@ -41,13 +44,19 @@ public class TriggerAiStreamingAction extends AnAction {
                 if (currentStreamWriter != null && currentStreamWriter.isStreaming()) {
                     currentStreamWriter.stopStreaming();
                 }
+                // 获取选中区域的起始偏移
+                int startOffset = selectionModel.getSelectionEnd();
+                // 获取文档对象
+                Document document = editor.getDocument();
+                // 根据偏移量获取对应的行号（0-based）
+                int lineNumber = document.getLineNumber(startOffset);
                 // 创建并初始化写入器
                 currentStreamWriter = new AiEditorStreamWriter(project, editor);
                 CompletableFuture.supplyAsync(() -> AiUtil.generateCodeStream(selectedText))
                         .thenAccept(result -> {
                             ApplicationManager.getApplication().invokeLater(() -> {
                                 // 在 EDT 中安全启动流式写入
-                                currentStreamWriter.startStreaming(result);
+                                currentStreamWriter.startStreaming(result, lineNumber);
                             });
                         });
             }
@@ -55,9 +64,4 @@ public class TriggerAiStreamingAction extends AnAction {
             Messages.showInfoMessage("请选中要询问的问题🙏", "暂无找到问题");
         }
     }
-    // IMPORTANT: 在实际插件中，你需要在 Project lifecycle 或 Editor lifecycle
-    // 中调用 stopStreaming() 来清理资源。
-    // 例如，如果你的 AiEditorStreamWriter 实例与 Editor 关联，
-    // 你可以在 Editor 监听器中检测到 Editor 关闭并调用 stopStreaming()。
-    // 如果与 Project 关联，可以在 Project Service 的 dispose 方法中调用。
 }
