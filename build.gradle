@@ -23,7 +23,7 @@ dependencies {
     }
 
     // Spring AI for OpenAI（排除 Jackson & reactor-core，避免与 IntelliJ 冲突）
-    implementation("org.springframework.ai:spring-ai-openai:1.0.3"){
+    implementation("org.springframework.ai:spring-ai-openai:1.1.2"){
         exclude group: "com.fasterxml.jackson.core"
         exclude group: "com.fasterxml.jackson.databind"
         exclude group: "com.fasterxml.jackson.annotation"
@@ -31,7 +31,15 @@ dependencies {
     }
 
     // Spring AI for Ollama（同样排除相关依赖）
-    implementation("org.springframework.ai:spring-ai-ollama:1.0.3") {
+    implementation("org.springframework.ai:spring-ai-ollama:1.1.2") {
+        exclude group: "com.fasterxml.jackson.core"
+        exclude group: "com.fasterxml.jackson.databind"
+        exclude group: "com.fasterxml.jackson.annotation"
+//        exclude group: "io.projectreactor", module: "reactor-core"
+    }
+
+    // Spring AI for DeepSeek（同样排除相关依赖）
+    implementation("org.springframework.ai:spring-ai-deepseek:1.1.2") {
         exclude group: "com.fasterxml.jackson.core"
         exclude group: "com.fasterxml.jackson.databind"
         exclude group: "com.fasterxml.jackson.annotation"

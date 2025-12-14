@@ -26,7 +26,7 @@ public class CommentGeneratorAction extends AnAction {
         if (AiUtil.checkAiIsAlready()) {
             return;
         }
-        AiUtil.initOpenAiChatModel();
+        AiUtil.initAiChatModel();
         SelectionModel selectionModel = editor.getSelectionModel();
         // 检查是否有选中的文本
         if (selectionModel.hasSelection()) {
@@ -44,7 +44,7 @@ public class CommentGeneratorAction extends AnAction {
                 EditorWriteExample.insertTextBetweenLines(project, editor, lineNumber - 1, StringUtils.addIndentation(textToInsert));
             }
         } else {
-            Messages.showInfoMessage("请选中要询问的问题🙏", "暂无找到问题");
+            Messages.showInfoMessage("Please select the question you wish to inquire about🙏", "No Issues Found Yet");
         }
     }
 }

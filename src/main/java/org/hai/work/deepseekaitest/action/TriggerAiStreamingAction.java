@@ -33,7 +33,7 @@ public class TriggerAiStreamingAction extends AnAction {
         if (AiUtil.checkAiIsAlready()) {
             return;
         }
-        AiUtil.initOpenAiChatModel();
+        AiUtil.initAiChatModel();
         SelectionModel selectionModel = editor.getSelectionModel();
         // 检查是否有选中的文本
         if (selectionModel.hasSelection()) {
@@ -53,15 +53,14 @@ public class TriggerAiStreamingAction extends AnAction {
                 // 创建并初始化写入器
                 currentStreamWriter = new AiEditorStreamWriter(project, editor);
                 CompletableFuture.supplyAsync(() -> AiUtil.generateCodeStream(selectedText))
-                        .thenAccept(result -> {
-                            ApplicationManager.getApplication().invokeLater(() -> {
-                                // 在 EDT 中安全启动流式写入
-                                currentStreamWriter.startStreaming(result, lineNumber);
-                            });
-                        });
+                        .thenAccept(result -> ApplicationManager.getApplication().invokeLater(() -> {
+                            // 在 EDT 中安全启动流式写入
+                            currentStreamWriter.startStreaming(result, lineNumber);
+                        }));
             }
         } else {
-            Messages.showInfoMessage("请选中要询问的问题🙏", "暂无找到问题");
+            Messages.showInfoMessage("Please select the question you wish to inquire about🙏", "No Issues Found Yet");
+
         }
     }
 }

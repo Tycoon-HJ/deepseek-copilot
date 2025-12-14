@@ -28,12 +28,12 @@ public class AiEditorStreamWriter {
     // 它是线程安全的，因为Flux的回调可能来自不同的线程（虽然我们会切到EDT）
     // 但AtomicInteger确保了更新总长度时的原子性
     private final AtomicInteger currentTotalLength = new AtomicInteger(0);
+    private final Project project;
+    private final Editor editor;
+    private final Document document;
+    private final CaretModel caretModel;
     @Nullable
     private Disposable currentSubscription; // 使用 @Nullable 注解，表示可能为 null
-    private Project project;
-    private Editor editor;
-    private Document document;
-    private CaretModel caretModel;
     // 记录AI输出开始插入时的Document offset
     private int startOffset;
 
@@ -95,8 +95,6 @@ public class AiEditorStreamWriter {
                                     editor.getScrollingModel().scrollToCaret(ScrollType.CENTER_DOWN);
                                 } catch (Exception e) {
                                     // 插入过程中发生的异常处理 (例如，Document被外部修改导致offset无效等)
-                                    System.err.println("Error inserting text chunk: " + e.getMessage());
-                                    e.printStackTrace();
                                     // 停止流以防止进一步的问题
                                     stopStreaming();
                                     // 考虑在UI上显示错误信息给用户
@@ -105,8 +103,6 @@ public class AiEditorStreamWriter {
                         },
                         // onError: 处理流中的错误
                         error -> {
-                            System.err.println("AI streaming encountered an error: " + error.getMessage());
-                            error.printStackTrace();
                             // 可以在UI上显示错误信息给用户，或者回滚已插入的部分文本（需要在Write Action中）
                             currentSubscription = null; // 错误发生，订阅结束
                         },

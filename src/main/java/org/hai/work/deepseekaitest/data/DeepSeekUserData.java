@@ -25,7 +25,7 @@ public final class DeepSeekUserData implements PersistentStateComponent<DeepSeek
     }
 
     @Override
-    public void loadState(DeepSeekUserData state) {
+    public void loadState(@NotNull DeepSeekUserData state) {
         XmlSerializerUtil.copyBean(state, this);
     }
 

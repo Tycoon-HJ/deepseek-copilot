@@ -18,8 +18,6 @@ public class EditorWriteExample {
     public static void insertTextBetweenLines(Project project, Editor editor, int endLine, String text) {
         Document document = editor.getDocument();
         int insertOffset = document.getLineEndOffset(endLine);
-        WriteCommandAction.runWriteCommandAction(project, () -> {
-            document.insertString(insertOffset, "\n" + text);
-        });
+        WriteCommandAction.runWriteCommandAction(project, () -> document.insertString(insertOffset, "\n" + text));
     }
 }

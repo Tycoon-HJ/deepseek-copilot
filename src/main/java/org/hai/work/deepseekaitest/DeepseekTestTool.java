@@ -49,17 +49,17 @@ public class DeepseekTestTool extends BaseConfigurable implements SearchableConf
             deepSeekUserData.setApiKey(new String(jTextFieldApiKey.getPassword()));
             deepSeekUserData.setTestFramework((String) comboBox1.getSelectedItem());
             deepSeekUserData.setAiModel(jTextFieldModel.getText());
-            Messages.showMessageDialog("保存成功！！！", "保存连接信息", Messages.getInformationIcon());
+            Messages.showMessageDialog("Saved successfully", "Save Connection Information", Messages.getInformationIcon());
         });
 
         netTestPing.addActionListener(e -> {
             try {
-                ChatModel chatModel = AiUtil.initOpenAiChatModel(jTextFieldBaseUrl.getText(), new String(jTextFieldApiKey.getPassword()), jTextFieldModel.getText());
+                ChatModel chatModel = AiUtil.initChatModel(jTextFieldBaseUrl.getText(), new String(jTextFieldApiKey.getPassword()), jTextFieldModel.getText());
                 chatModel.call("hello");
-                Messages.showMessageDialog("恭喜连接成功！！！", "测试AI网络", Messages.getInformationIcon());
+                Messages.showMessageDialog("Congratulations on successful connection", "Test AI Connection", Messages.getInformationIcon());
             } catch (Exception ex) {
-                AiUtil.destroyOpenAi();
-                Messages.showMessageDialog("错误！！！请更换AI配置参数！！！", "测试AI网络", Messages.getErrorIcon());
+                AiUtil.destroyAllAi();
+                Messages.showMessageDialog("Error!!! Please replace the AI configuration parameters!!!", "Test AI Connection", Messages.getErrorIcon());
             }
         });
     }

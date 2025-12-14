@@ -6,10 +6,14 @@ import org.hai.work.deepseekaitest.data.DeepSeekUserData;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.deepseek.DeepSeekChatModel;
+import org.springframework.ai.deepseek.DeepSeekChatOptions;
+import org.springframework.ai.deepseek.api.DeepSeekApi;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaApi;
-import org.springframework.ai.ollama.api.OllamaOptions;
+import org.springframework.ai.ollama.api.OllamaChatOptions;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
@@ -30,8 +34,9 @@ public class AiUtil {
             - **不要**包含任何类定义（例如：`public class MyClass { ... }`）。
             - **不要**包含任何 import 语句（例如：`import java.util.*;`）。
             - **不要**包含任何 package 声明（例如：`package com.example;`）。
-            - **不要**包含任何额外的文字说明、解释或 Markdown 格式（例如：```java...```）。
+            - **不要**包含任何额外的文字说明、解释或 Markdown 格式。
             - 输出内容必须**仅是**方法及其 Javadoc 的序列。
+            - 只返回一个方法，必须使用代码块返回（例如：```java...```）
             """;
 
     public final static String TEST_PROME_MESSAGE = """
@@ -45,9 +50,9 @@ public class AiUtil {
             
             输出：
             **只提供** TestNG 测试类的 Java 代码。
-            **不要**包含任何解释性文字、描述、引言、结论或 Markdown 格式（例如：```java ... ```）。
+            **不要**包含任何解释性文字、描述、引言、结论或 Markdown 格式。
             响应内容必须**仅是**测试类的纯 Java 代码。
-            
+            必须使用代码块返回（例如：```java...```）
             待测试的 Java 代码：
             """;
 
@@ -63,33 +68,49 @@ public class AiUtil {
             """;
     private static OllamaChatModel ollamaChatModel;
     private static OpenAiChatModel openAiChatModel;
+    private static DeepSeekChatModel deepSeekChatModel;
 
     public static boolean checkAiIsAlready() {
         DeepSeekUserData deepSeekUserData = ApplicationManager.getApplication().getService(DeepSeekUserData.class);
         if (deepSeekUserData == null || Objects.isNull(deepSeekUserData.getBaseUrl()) || Objects.isNull(deepSeekUserData.getApiKey())
                 || Objects.isNull(deepSeekUserData.getAiModel()) || Objects.isNull(deepSeekUserData.getTestFramework())) {
             ApplicationManager.getApplication().invokeLater(() ->
-                    Messages.showMessageDialog("未加载到AI相关配置，请先在设置中进行AI参数配置！", "DeepSeek Copilot", Messages.getWarningIcon()));
+                    Messages.showMessageDialog("AI-related configurations have not been loaded. Please configure the AI parameters in the settings first", "DeepSeek Copilot", Messages.getWarningIcon()));
             return true;
         }
         return false;
     }
 
 
-    public static void initOpenAiChatModel() {
-        if (openAiChatModel == null) {
+    public static void initAiChatModel() {
+        DeepSeekUserData deepSeekUserData = ApplicationManager.getApplication().getService(DeepSeekUserData.class);
+        if (deepSeekChatModel == null || openAiChatModel == null) {
             try {
-                DeepSeekUserData deepSeekUserData = ApplicationManager.getApplication().getService(DeepSeekUserData.class);
-                ChatModel chatModel = AiUtil.initOpenAiChatModel(deepSeekUserData.getBaseUrl(), deepSeekUserData.getApiKey(), deepSeekUserData.getAiModel());
+                ChatModel chatModel = AiUtil.initChatModel(deepSeekUserData.getBaseUrl(), deepSeekUserData.getApiKey(), deepSeekUserData.getAiModel());
                 chatModel.call("hello");
             } catch (Exception ex) {
-                AiUtil.destroyOpenAi();
-                Messages.showMessageDialog("错误！！！请更换AI配置参数！！！", "测试AI网络", Messages.getErrorIcon());
+                AiUtil.destroyAllAi();
+                Messages.showMessageDialog("Error!!! Please replace the AI configuration parameters!!!", "Test AI Connection", Messages.getErrorIcon());
             }
         }
     }
 
-    public static OpenAiChatModel initOpenAiChatModel(String baseUrl, String apiKey, String model) {
+    public static ChatModel initChatModel(String baseUrl, String apiKey, String model) {
+        if (model.contains("deepseek")) {
+            if (deepSeekChatModel == null) {
+                DeepSeekApi deepSeekApi = DeepSeekApi.builder()
+                        .apiKey(apiKey)
+                        .baseUrl(baseUrl)
+                        .build();
+                DeepSeekChatOptions deepSeekChatOptions = DeepSeekChatOptions.builder()
+                        .model(model)
+                        .temperature(0.2)
+                        .maxTokens(8192)
+                        .build();
+                deepSeekChatModel = DeepSeekChatModel.builder().deepSeekApi(deepSeekApi).defaultOptions(deepSeekChatOptions).build();
+            }
+            return deepSeekChatModel;
+        }
         if (openAiChatModel == null) {
             OpenAiApi openAiApi = OpenAiApi.builder()
                     .apiKey(apiKey)
@@ -98,15 +119,16 @@ public class AiUtil {
             OpenAiChatOptions openAiChatOptions = OpenAiChatOptions.builder()
                     .model(model)
                     .temperature(0.2)
-                    .maxTokens(2000000)
+                    .maxTokens(8192)
                     .build();
             openAiChatModel = OpenAiChatModel.builder().openAiApi(openAiApi).defaultOptions(openAiChatOptions).build();
         }
         return openAiChatModel;
     }
 
-    public static void destroyOpenAi() {
+    public static void destroyAllAi() {
         openAiChatModel = null;
+        deepSeekChatModel = null;
     }
 
     public static Flux<String> generateCodeStream(String code) {
@@ -121,7 +143,7 @@ public class AiUtil {
     private static String getAiResult(String code) {
         SystemMessage systemMessage = new SystemMessage(AiUtil.SYSTEM_MESSAGE);
         Prompt prompt = new Prompt(systemMessage, new UserMessage(code));
-        return openAiChatModel.call(prompt).getResult().toString().split("```java")[1].split("```")[0];
+        return getResult(Objects.requireNonNullElse(openAiChatModel, deepSeekChatModel).call(prompt));
     }
 
     /**
@@ -133,14 +155,19 @@ public class AiUtil {
     public static String getCodeComment(String code) {
         SystemMessage systemMessage = new SystemMessage(AiUtil.COMMON);
         Prompt prompt = new Prompt(systemMessage, new UserMessage(code));
-        System.out.println(openAiChatModel.call(prompt).getResult());
-        return openAiChatModel.call(prompt).getResult().getOutput().getText();
+        ChatModel chatModel = Objects.requireNonNullElse(openAiChatModel, deepSeekChatModel);
+        return chatModel.call(prompt).getResult().getOutput().getText();
     }
 
     public static String getAiTestResult(String code, String testFramework) {
         SystemMessage systemMessage = new SystemMessage(AiUtil.TEST_PROME_MESSAGE.replace("TestNG", testFramework));
         Prompt prompt = new Prompt(systemMessage, new UserMessage(code));
-        return openAiChatModel.call(prompt).getResult().toString().split("```java")[1].split("```")[0];
+        return getResult(Objects.requireNonNullElse(openAiChatModel, deepSeekChatModel).call(prompt));
+    }
+
+
+    private static String getResult(ChatResponse chatModel) {
+        return chatModel.getResult().toString().split("```java")[1].split("```")[0];
     }
 
     /**
@@ -151,7 +178,7 @@ public class AiUtil {
     public static OllamaChatModel gainOllamaChatModelInstance() {
         if (Objects.isNull(ollamaChatModel)) {
             OllamaApi ollamaApi = OllamaApi.builder().baseUrl("http://localhost:11434").build();
-            OllamaOptions ollamaOptions = new OllamaOptions();
+            OllamaChatOptions ollamaOptions = new OllamaChatOptions();
             ollamaOptions.setModel("deepseek-coder-v2:16b");
             ollamaChatModel = OllamaChatModel.builder().ollamaApi(ollamaApi).defaultOptions(ollamaOptions).build();
         }
@@ -163,6 +190,6 @@ public class AiUtil {
         OllamaChatModel ollamaChatModel = gainOllamaChatModelInstance();
         SystemMessage systemMessage = new SystemMessage(AiUtil.SYSTEM_MESSAGE);
         Prompt prompt = new Prompt(systemMessage, new UserMessage(textBeforeCrate));
-        return ollamaChatModel.call(prompt).getResult().toString().split("```java")[1].split("```")[0];
+        return getResult(ollamaChatModel.call(prompt));
     }
 }
