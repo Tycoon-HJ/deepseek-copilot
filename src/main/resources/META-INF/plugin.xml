@@ -13,7 +13,8 @@
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
-    <description>
+    <description>AI Copilot is an AI-powered assistant plugin for IntelliJ IDEA that intelligently analyzes your
+        code and automatically generates high-quality unit tests
         <![CDATA[
             <h1>AI Copilot</h1>
             <ul>
