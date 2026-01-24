@@ -5,7 +5,7 @@
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-    <name>DeepSeek Copilot</name>
+    <name>AI Copilot</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="yinhj0325@qq.com" url="https://www.haiwangrexian.com">海王娱乐有限公司</vendor>
@@ -13,12 +13,23 @@
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
-    <description>DeepSeek Copilot is an AI-powered assistant plugin for IntelliJ IDEA that intelligently analyzes your
-        code and automatically generates high-quality unit tests. It also supports comment-driven code generation,
-        greatly boosting your development efficiency and code quality.
-        Whether you're struggling with low test coverage or getting stuck on complex logic, DeepSeek Copilot has you
-        covered — so you can focus on what truly matters: creative development.
-        Guidelines: https://github.com/Tycoon-HJ/deepseek-copilot
+    <description>
+        <![CDATA[
+            <h1>AI Copilot</h1>
+            <ul>
+              <li>该插件可以在代码中选中方法，生成完整的JavaDoc </li>
+              <li>写下行注释生成代码 </li>
+              <li>选中整个文件，右键生成对应的单元测试  </li>
+              <li>AI Copilot is an AI-powered assistant plugin for IntelliJ IDEA that intelligently analyzes your
+                    code and automatically generates high-quality unit tests. It also supports comment-driven code generation,
+                    greatly boosting your development efficiency and code quality.
+                    Whether you're struggling with low test coverage or getting stuck on complex logic, AI Copilot has you
+                    covered — so you can focus on what truly matters: creative development</li>
+              <li>有任何想法与建议或是缺陷，均可到GitHub进行留言</li>
+              <li><a href="https://github.com/Tycoon-HJ/deepseek-copilot ">GitHub</a></li>
+            </ul>
+            <br/>
+        ]]>
     </description>
 
     <!-- Product and plugin compatibility requirements.
@@ -32,7 +43,7 @@
         <applicationConfigurable
                 instance="org.hai.work.deepseekaitest.DeepseekTestTool"
                 id="DeepSeekTestTool"
-                displayName="Deepseek Copilot Setting"/>
+                displayName="AI Copilot Setting"/>
 
     </extensions>
     <actions>
