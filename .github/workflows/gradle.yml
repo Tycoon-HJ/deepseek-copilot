@@ -35,6 +35,39 @@ jobs:
           name: plugin-distribution
           path: build/distributions/*.zip
 
+      # 新增步骤：解压插件包
+      - name: Unzip plugin
+        run: |
+          mkdir -p build/unzipped
+          unzip -o build/distributions/*.zip -d build/unzipped
+
+      # 新增步骤：上传解压后内容作为 artifact
+      - name: Upload Unzipped Plugin
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-unzipped
+          path: build/unzipped/
+
+      # 可选高级用法——将解压后的内容作为 Release 附件
+      # - name: Create GitHub Release
+      #   id: create_release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     tag_name: ${{ github.sha }}
+      #     name: Auto Release ${{ github.sha }}
+      #     draft: false
+      #     prerelease: false
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # 
+      # - name: Upload plugin content to Release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     files: build/unzipped/**
+      #     tag_name: ${{ github.sha }}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   dependency-submission:
     runs-on: ubuntu-latest
 
