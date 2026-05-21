@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "org.hai.work"
-version = "1.5.4-SNAPSHOT"
+version = "1.5.5-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -61,7 +61,6 @@ intellijPlatform {
                 it.types = [IntelliJPlatformType.IntellijIdeaCommunity]  // 可改为 IntelliJPlatformType.IdeaCommunity 等
                 it.channels = [ProductRelease.Channel.RELEASE]
                 it.sinceBuild = "233"
-                it.untilBuild = "253.*"
             }
         }
     }
@@ -69,7 +68,6 @@ intellijPlatform {
         name.set("AI Copilot")
         ideaVersion {
             sinceBuild = "233"
-            untilBuild = "253.*"
         }
     }
 }
